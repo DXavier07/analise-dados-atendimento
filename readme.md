@@ -1,4 +1,4 @@
-# 📊 Análise de Performance de Atendimento (Simulação 99/DiDi)
+# 📊 Análise de Performance de Atendimento
 
 Este projeto é uma ferramenta de análise de dados desenvolvida em **Python** para monitorar KPIs (Indicadores-Chave de Desempenho) de suporte ao usuário. 
 
