@@ -35,6 +35,14 @@ Este script processa uma base de dados (simulada) e responde automaticamente:
 
 ---
 
+##  Visualização dos Dados
+
+O script gera automaticamente um gráfico para facilitar a identificação dos gargalos:
+
+![Gráfico de Performance](grafico_performance.png)
+
+---
+
 ##  Estrutura do Projeto
 
 ```text
