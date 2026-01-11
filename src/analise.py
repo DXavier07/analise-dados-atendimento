@@ -1,64 +1,74 @@
 import os
 import csv
+import matplotlib.pyplot as plt # Importamos a biblioteca de gráficos
 
 # --- CONFIGURAÇÃO ---
 arquivo_csv = 'dados/chamados_99.csv'
 lista_chamados = []
 
-print(f"--- 📊 INICIANDO ANÁLISE DE DADOS DA 99 ---")
+print(f"--- 📊 INICIANDO ANÁLISE COMPLETA ---")
 
 try:
-    # 1. Carregamento dos Dados
+    # 1. Carregamento
     with open(arquivo_csv, mode='r', encoding='utf-8') as arquivo:
         leitor = csv.DictReader(arquivo)
         for linha in leitor:
             lista_chamados.append(linha)
 
-    # 2. Processamento (Agrupando os dados)
-    estatisticas = {} # Vai guardar: {'Pagamento': {'qtd': 10, 'tempo_total': 200, 'nota_total': 30}}
+    # 2. Processamento
+    estatisticas = {}
 
     for chamado in lista_chamados:
         tipo = chamado['tipo_problema']
         tempo = int(chamado['tempo_resolucao_min'])
-        nota = int(chamado['nota_usuario'])
         
         if tipo not in estatisticas:
-            estatisticas[tipo] = {'qtd': 0, 'tempo_total': 0, 'nota_total': 0}
+            estatisticas[tipo] = {'qtd': 0, 'tempo_total': 0}
             
         estatisticas[tipo]['qtd'] += 1
         estatisticas[tipo]['tempo_total'] += tempo
-        estatisticas[tipo]['nota_total'] += nota
 
-    # 3. Exibição da Tabela
+    # 3. Exibição no Terminal (Relatório de Texto)
     print("\n📋 RELATÓRIO GERAL:")
-    print(f"{'TIPO':<15} | {'QTD':<5} | {'TEMPO MÉDIO':<12} | {'NOTA MÉDIA'}")
-    print("-" * 55)
+    print(f"{'TIPO':<15} | {'QTD':<5} | {'TEMPO MÉDIO':<12}")
+    print("-" * 40)
 
-    pior_tempo = 0
-    problema_mais_lento = ""
+    # Preparando dados para o gráfico
+    tipos_grafico = []
+    tempos_grafico = []
 
     for tipo, dados in estatisticas.items():
         media_tempo = dados['tempo_total'] / dados['qtd']
-        media_nota = dados['nota_total'] / dados['qtd']
         
-        # Lógica para descobrir o gargalo automaticamente
-        if media_tempo > pior_tempo:
-            pior_tempo = media_tempo
-            problema_mais_lento = tipo
+        # Guardando dados nas listas para o gráfico
+        tipos_grafico.append(tipo)
+        tempos_grafico.append(media_tempo)
 
-        print(f"{tipo:<15} | {dados['qtd']:<5} | {media_tempo:.1f} min      | {media_nota:.1f} / 5.0")
+        print(f"{tipo:<15} | {dados['qtd']:<5} | {media_tempo:.1f} min")
 
-    print("-" * 55)
+    print("-" * 40)
 
-    # 4. Insight Automático (A mágica acontece aqui)
-    print("\n💡 INSIGHT DO SISTEMA:")
-    print(f"O gargalo operacional é: >> {problema_mais_lento.upper()} <<")
-    print(f"Este problema leva em média {pior_tempo:.1f} minutos para ser resolvido.")
+    # 4. GERANDO O GRÁFICO (A novidade visual)
+    print("\n🎨 Gerando gráfico visual...")
+
+    # Criando o desenho (Bar Chart)
+    plt.figure(figsize=(10, 6)) # Tamanho da imagem
+    plt.bar(tipos_grafico, tempos_grafico, color='orange') # Barras laranjas (cor da 99)
+
+    # Textos do gráfico
+    plt.title('Tempo Médio de Resolução por Tipo de Problema')
+    plt.xlabel('Tipo de Problema')
+    plt.ylabel('Tempo Médio (minutos)')
+    plt.grid(axis='y', linestyle='--', alpha=0.7) # Linhas de grade suaves
+
+    # Salvando a imagem na pasta do projeto
+    nome_imagem = 'grafico_performance.png'
+    plt.savefig(nome_imagem)
     
-    if pior_tempo > 30:
-        print("⚠️ ALERTA: Tempo de resolução acima do ideal (30 min). Sugere-se revisão do processo.")
-    else:
-        print("✅ Operação dentro dos parâmetros normais.")
+    print(f"✅ SUCESSO! O gráfico foi salvo como '{nome_imagem}'.")
+    print("Abra a pasta do projeto para ver a imagem!")
 
 except FileNotFoundError:
-    print("ERRO: O arquivo CSV não foi encontrado.")
+    print("ERRO: Arquivo CSV não encontrado.")
+except ImportError:
+    print("ERRO: Biblioteca matplotlib não instalada. Rode 'pip install matplotlib' no terminal.")
